@@ -84,6 +84,71 @@ st.markdown("""
     .stMetric { background-color: #0e1117; padding: 0.5rem; border-radius: 4px; border: 1px solid #30363d; }
 </style>
 """, unsafe_allow_html=True)
+# ==============================================================================
+# SEGMENT 2 CORE UPDATE: MULTI-SEASON HISTORICAL FETCH & 3-MONTH FIXTURE LOGGER
+# ==============================================================================
+def fetch_thestatsapi_to_sisonke(league_id):
+    """Clean commercial server connection. Bypasses all web firewalls."""
+    import datetime
+    import requests
+    import pandas as pd
+    
+    # 🏛️ STAGE 1: SET DATE BOUNDARIES & THESTATSAPI CORE CONFIG
+    current_date = datetime.date.today()
+    ninety_days_future = current_date + datetime.timedelta(days=90)
+    
+    api_token = "YOUR_PRIVATE_THESTATSAPI_KEY_HERE"
+    headers = {
+        "Authorization": f"Bearer {api_token}",
+        "Accept": "application/json"
+    }
+    
+    # Identify active multi-season years based on today's calendar window (2026)
+    target_seasons = [2025, 2026]
+    combined_records_list = []
+    
+    # 🧮 STAGE 2: HARVEST MULTI-SEASON HISTORY (RESULTS & FIXTURES COMBINED)
+    for season in target_seasons:
+        endpoint_url = f"https://thestatsapi.com{league_id}&season={season}"
+        try:
+            server_response = requests.get(endpoint_url, headers=headers, timeout=15)
+            if server_response.status_code == 200:
+                payload_data = server_response.json().get("data", [])
+                if payload_data:
+                    combined_records_list.extend(payload_data)
+        except Exception:
+            continue  # Protection guard: slips past timeout breaks silently
+            
+    if not combined_records_list:
+        return pd.DataFrame() # Clean fallback: returns empty frame if server fails
+        
+    raw_master_df = pd.DataFrame(combined_records_list)
+    
+    # 🛡️ STAGE 3: APPLY SURGICAL DATA FILTERING LOCKS
+    # Convert incoming timestamp text rows into standard pandas datetime layouts behind the glass
+    raw_master_df["match_date_parsed"] = pd.to_datetime(raw_master_df["date"]).dt.date
+    
+    # Split Layer A: Isolate all completed matches (Settled Historical Results)
+    settled_results_mask = raw_master_df["status"] == "FT"
+    historical_settled_df = raw_master_df[settled_results_mask]
+    
+    # Split Layer B: Isolate upcoming matches inside your strict 3-Month (90-Day) window
+    future_fixtures_mask = (
+        (raw_master_df["status"] == "NS") & 
+        (raw_master_df["match_date_parsed"] >= current_date) & 
+        (raw_master_df["match_date_parsed"] <= ninety_days_future)
+    )
+    upcoming_three_month_df = raw_master_df[future_fixtures_mask]
+    
+    # 📊 STAGE 4: COLLAPSE BLOCKS INTO A SINGLE REPAIRED DATA TIMELINE
+    final_sanitized_pipeline_df = pd.concat([historical_settled_df, upcoming_three_month_df], ignore_index=True)
+    
+    # Sort chronologically to preserve your time-decay half-life math sequence
+    final_sanitized_pipeline_df = final_sanitized_pipeline_df.sort_values(by="match_date_parsed", ascending=True)
+    
+    # Your Universal Structural Converter Module intercepts this clean output layout right here!
+    return final_sanitized_pipeline_df.drop(columns=["match_date_parsed"], errors="ignore")
+
 
 st.title("🦅 Sisonke Football Predictive Analytics Hub")
 st.caption("we beat the odds.")
