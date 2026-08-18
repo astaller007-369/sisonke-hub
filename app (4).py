@@ -87,6 +87,27 @@ st.markdown("""
 
 st.title("🦅 Sisonke Football Predictive Analytics Hub")
 st.caption("we beat the odds.")
+import streamlit as st
+import requests
+import pandas as pd
+
+def fetch_thestatsapi_to_sisonke(league_id, season_year):
+    """Bypasses web firewalls completely using clean developer API keys."""
+    url = f"https://thestatsapi.com{league_id}&season={season_year}"
+    headers = {
+        "Authorization": "Bearer YOUR_PRIVATE_THESTATSAPI_KEY_HERE",
+        "Accept": "application/json"
+    }
+    
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        raw_json_data = response.json()
+        # Your Universal Structural Converter Module intercepts this data payload instantly!
+        return pd.DataFrame(raw_json_data.get("data", []))
+    else:
+        st.error(f"❌ API Gateway Refused Connection. Status Code: {response.status_code}")
+        return pd.DataFrame()
+    
 # ==============================================================================
 # SEGMENT 2 OF 14: MATHEMATICAL COMPUTATION BACKBONE (POISSON CORE)
 # ==============================================================================
