@@ -361,12 +361,13 @@ try:
     with open("master_sisonke_database.csv", "rb") as local_storage_file:
         csv_bytes_data = local_storage_file.read()
         
-    # Standard Streamlit file download button module link layout
+    # Standard Streamlit file download button module link layout with unique key string
     st.sidebar.download_button(
         label="📥 Download CSV from Saved Storage",
         data=csv_bytes_data,
         file_name=f"exported_{selected_workspace.lower().replace(' ', '_')}_clean.csv",
         mime="text/csv",
+        key="sisonke_unique_sidebar_exporter_v2026",
         help="Instantly exports the active 22-column regular season file directly to your phone storage."
     )
 except FileNotFoundError:
