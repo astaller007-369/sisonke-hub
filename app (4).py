@@ -261,6 +261,57 @@ class SisonkeMathematicalCoreEngine:
 # ==============================================================================
 # SEGMENT 4 OF 14: PERSISTENT LOCAL FILE STORAGE BRIDGE (ANTI-RAM CACHE WIPE)
 # ==============================================================================
+# ==============================================================================
+# SEGMENT 4 UPDATE: 43-LEAGUE AUTOMATED DIRECTORY MAPPING & STORAGE HUB
+# ==============================================================================
+# The ID dictionary links your screen text to the API server database codes
+league_directory = {
+    "England Championship": 40, "Germany 2. Bundesliga": 79, "Dutch Eredivisie": 72,
+    "Belgium Pro League": 144, "France Ligue 2": 62, "Italy Serie B": 74,
+    "Spain Segunda División": 141, "Swedish Allsvenskan": 113, "Austrian Bundesliga": 218,
+    "Swiss Super League": 207, "Danish Superliga": 119, "South African Premier League (PSL)": 288,
+    "Croatia HNL": 224, "Belgium Challenger Pro": 145, "Brazil Série A": 262,
+    "Brazil Série B": 263, "Australia A-League Men": 191, "Argentina Tier 1": 256,
+    "Scottish Championship": 180, "Dutch Eerste Divisie": 73, "Portugal Liga Portugal 2": 95,
+    "Japan J2 League": 197, "South Korea K League 2": 293, "Norway Eliteserien": 103,
+    "Norway 1. Divisjon": 104, "Sweden Superettan": 114, "Finland Veikkausliiga": 240,
+    "Ireland Premier Div": 357, "Iceland Besta deild": 365, "Poland Ekstraklasa": 106,
+    "Poland I Liga": 107, "Romania Liga I": 275, "Bulgaria First League": 310,
+    "Czech First League": 172, "Hungary NB I": 271, "Slovenia PrvaLiga": 322,
+    "Slovakia Super Liga": 315, "Chile Primera División": 265, "Colombia Primera A": 268,
+    "Morocco Botola Pro": 301, "Ecuador Serie A": 278, "Peru Liga 1": 281, 
+    "Uruguay Primera División": 284
+}
+
+# Renders the updated selection dropdown menu bar on your phone layout view
+selected_workspace = st.sidebar.selectbox(
+    "Select Target League Workspace:", 
+    options=list(league_directory.keys())
+)
+active_api_id = league_directory[selected_workspace]
+
+# Your original file uploader remains active right below the selection box
+uploaded_file = st.sidebar.file_uploader("Upload Custom CSV Database Backup", type=["csv"])
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("💾 System Storage Hub")
+
+try:
+    # Safely checks your local drive partition for the current database file
+    with open("master_sisonke_database.csv", "rb") as local_storage_file:
+        csv_bytes_data = local_storage_file.read()
+        
+    # Standard Streamlit file download button module link layout
+    st.sidebar.download_button(
+        label="📥 Download CSV from Saved Storage",
+        data=csv_bytes_data,
+        file_name=f"exported_{selected_workspace.lower().replace(' ', '_')}_clean.csv",
+        mime="text/csv",
+        help="Instantly exports the active 22-column regular season file directly to your phone storage."
+    )
+except FileNotFoundError:
+    st.sidebar.info("💡 Storage Notice: Local baseline CSV file is not written to disk yet. Upload a fresh file or trigger the API fetch to activate local storage exports.")
+
 st.sidebar.markdown("### 📁 Historical Matchday Upload Port")
 uploaded_file_stream = st.sidebar.file_uploader("Drop your master CSV database file here to append new matchday lines:", type=["csv"], key="csv_manual_uploader_v1")
 
@@ -299,6 +350,28 @@ if uploaded_file_stream is not None:
         st.sidebar.error(f"Local Storage Write Fault: {write_disk_err}")
 
 full_validation_df = st.session_state.get("full_validation_df", pd.DataFrame())
+# ==============================================================================
+# ADDED TO SEGMENT 4 BOTTOM: LOCAL DISK STORAGE HUB DOWNLOAD INTERFACE
+# ==============================================================================
+st.sidebar.markdown("---")
+st.sidebar.subheader("💾 System Storage Hub")
+
+try:
+    # Safely checks your local drive storage path for your active database file
+    with open("master_sisonke_database.csv", "rb") as local_storage_file:
+        csv_bytes_data = local_storage_file.read()
+        
+    # Standard Streamlit file download button module link layout
+    st.sidebar.download_button(
+        label="📥 Download CSV from Saved Storage",
+        data=csv_bytes_data,
+        file_name=f"exported_{selected_workspace.lower().replace(' ', '_')}_clean.csv",
+        mime="text/csv",
+        help="Instantly exports the active 22-column regular season file directly to your phone storage."
+    )
+except FileNotFoundError:
+    st.sidebar.info("💡 Storage Notice: Local baseline CSV file is not written to disk yet. Upload a fresh file or trigger the API fetch to activate local storage exports.")
+    
 # ==============================================================================
 # SEGMENT 5 OF 14: ADVANCED FUZZY ALIAS MAPPING CORE & TYPE HARDENER
 # ==============================================================================
