@@ -97,7 +97,7 @@ def fetch_thestatsapi_to_sisonke(league_id):
     current_date = datetime.date.today()
     ninety_days_future = current_date + datetime.timedelta(days=90)
     
-    api_token = "YOUR_PRIVATE_THESTATSAPI_KEY_HERE"
+    api_token = "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu"
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Accept": "application/json"
