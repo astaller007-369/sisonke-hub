@@ -85,42 +85,65 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 # ==============================================================================
-# SEGMENT 2 CORE UPDATE: MULTI-SEASON HISTORICAL FETCH & 3-MONTH FIXTURE LOGGER
+# SEGMENT 2 CORE SAFETY PATCH: DYNAMIC SEASONS INPUT FETCH ENGINE
 # ==============================================================================
-def fetch_thestatsapi_to_sisonke(league_id):
+def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     """Clean commercial server connection. Bypasses all web firewalls."""
     import datetime
     import requests
     import pandas as pd
     
-    # 🏛️ STAGE 1: SET DATE BOUNDARIES & THESTATSAPI CORE CONFIG
     current_date = datetime.date.today()
     ninety_days_future = current_date + datetime.timedelta(days=90)
     
-    api_token = "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu"
+    # 🛑 PASTE YOUR REAL APINUMERIC TOKEN STRINGS INSIDE THESE QUOTES:
+    api_token = "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu" 
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Accept": "application/json"
     }
     
-    # Identify active multi-season years based on today's calendar window (2026)
-    target_seasons = [2025, 2026]
     combined_records_list = []
     
-    # 🧮 STAGE 2: HARVEST MULTI-SEASON HISTORY (RESULTS & FIXTURES COMBINED)
     for season in target_seasons:
         endpoint_url = f"https://thestatsapi.com{league_id}&season={season}"
         try:
             server_response = requests.get(endpoint_url, headers=headers, timeout=15)
             if server_response.status_code == 200:
                 payload_data = server_response.json().get("data", [])
-                if payload_data:
+                if isinstance(payload_data, list) and payload_data:
                     combined_records_list.extend(payload_data)
         except Exception:
-            continue  # Protection guard: slips past timeout breaks silently
+            continue
             
     if not combined_records_list:
-        return pd.DataFrame() # Clean fallback: returns empty frame if server fails
+        return pd.DataFrame()
+        
+    raw_master_df = pd.DataFrame(combined_records_list)
+    
+    if "date" not in raw_master_df.columns:
+        return pd.DataFrame()
+        
+    raw_master_df["match_date_parsed"] = pd.to_datetime(raw_master_df["date"]).dt.date
+    
+    settled_results_mask = raw_master_df.get("status", "") == "FT"
+    historical_settled_df = raw_master_df[settled_results_mask]
+    
+    future_fixtures_mask = (
+        (raw_master_df.get("status", "") == "NS") & 
+        (raw_master_df["match_date_parsed"] >= current_date) & 
+        (raw_master_df["match_date_parsed"] <= ninety_days_future)
+    )
+    upcoming_three_month_df = raw_master_df[future_fixtures_mask]
+    
+    if historical_settled_df.empty and upcoming_three_month_df.empty:
+        return pd.DataFrame()
+        
+    final_sanitized_pipeline_df = pd.concat([historical_settled_df, upcoming_three_month_df], ignore_index=True)
+    final_sanitized_pipeline_df = final_sanitized_pipeline_df.sort_values(by="date", ascending=True)
+    
+    return final_sanitized_pipeline_df.drop(columns=["match_date_parsed"], errors="ignore")
+    
         
     raw_master_df = pd.DataFrame(combined_records_list)
     
@@ -259,7 +282,7 @@ class SisonkeMathematicalCoreEngine:
         if len(df) < 3: return pd.DataFrame()
         return df.tail(15).copy()
 # ==============================================================================
-# SEGMENT 4 REVISED: DUAL PARAMETER FETCH TRIGGER BUTTONS & PERSISTENCE HUB
+# SEGMENT 4 REVISED: COMPLETE DIRECTORY, SEASONS BOX & TRIGGER ENGINE
 # ==============================================================================
 import os
 
@@ -291,10 +314,25 @@ selected_workspace = st.sidebar.selectbox(
 )
 active_api_id = league_directory[selected_workspace]
 
+# 📝 THE NEW SEASON INPUT TEXT BOX
+# This renders right below your dropdown menu and passes your inputs directly to the code loops
+seasons_input_text = st.sidebar.text_input(
+    "Enter Required Season Data:",
+    value="2025, 2026",
+    help="Type out your target multi-season years separated cleanly by commas (e.g., 2025, 2026)."
+)
+
+# Convert your screen text entry into a clean mathematical integer list behind the glass
+try:
+    active_seasons_list = [int(s.strip()) for s in seasons_input_text.split(",") if s.strip().isdigit()]
+except Exception:
+    active_seasons_list = [2025, 2026] # Safe fallback baseline if you leave it empty or make a typo
+
 # BUTTON A: THE ALL-IN-ONE MASTER FETCH BUTTON (History + Fixtures)
 if st.sidebar.button("⚡ Fetch Live Matchday Data", key="sisonke_api_fetch_trigger_btn_2026"):
     with st.spinner(f"Connecting to Data Gateway... Fetching {selected_workspace} records"):
-        incoming_api_df = fetch_thestatsapi_to_sisonke(active_api_id)
+        # We now pass both the league code AND your custom season list into the fetcher!
+        incoming_api_df = fetch_thestatsapi_to_sisonke(active_api_id, active_seasons_list)
         
         if not incoming_api_df.empty:
             incoming_api_df.to_csv("master_sisonke_database.csv", index=False)
@@ -308,7 +346,6 @@ if st.sidebar.button("⚡ Fetch Live Matchday Data", key="sisonke_api_fetch_trig
 # 📅 BUTTON B: THE DEDICATED FIXTURES TRIGGER BUTTON (Fixtures Only)
 if st.sidebar.button("📅 Sync 3-Month Fixtures Only", key="sisonke_fixtures_exclusive_trigger_v2026"):
     with st.spinner(f"Updating {selected_workspace} Fixture Calendar..."):
-        # Queries only the current active year's upcoming games matrix
         import datetime
         import requests
         import pandas as pd
@@ -316,9 +353,11 @@ if st.sidebar.button("📅 Sync 3-Month Fixtures Only", key="sisonke_fixtures_ex
         current_date = datetime.date.today()
         ninety_days_future = current_date + datetime.timedelta(days=90)
         
-        # Pulls from your Segment 2 variables behind the glass
+        # Pulls the newest year you typed into your sidebar text box automatically
+        newest_active_year = max(active_seasons_list) if active_seasons_list else 2026
+        
         api_token = "YOUR_PRIVATE_THESTATSAPI_KEY_HERE"
-        url = f"https://thestatsapi.com{active_api_id}&season=2026"
+        url = f"https://thestatsapi.com{active_api_id}&season={newest_active_year}"
         headers = {"Authorization": f"Bearer {api_token}", "Accept": "application/json"}
         
         try:
@@ -329,14 +368,11 @@ if st.sidebar.button("📅 Sync 3-Month Fixtures Only", key="sisonke_fixtures_ex
                     raw_fixtures_df = pd.DataFrame(payload)
                     raw_fixtures_df["match_date_parsed"] = pd.to_datetime(raw_fixtures_df["date"]).dt.date
                     
-                    # Surgical Filter: Isolate unplayed upcoming matches within the 90-day window
                     mask = (raw_fixtures_df["status"] == "NS") & (raw_fixtures_df["match_date_parsed"] >= current_date) & (raw_fixtures_df["match_date_parsed"] <= ninety_days_future)
                     upcoming_df = raw_fixtures_df[mask].drop(columns=["match_date_parsed"], errors="ignore")
                     
-                    # Merge cleanly with your existing local storage database to protect historical rows
                     if os.path.exists("master_sisonke_database.csv"):
                         existing_df = pd.read_csv("master_sisonke_database.csv")
-                        # Keep existing completed games, append fresh upcoming fixture schedule cards
                         completed_games_df = existing_df[existing_df["status"] == "FT"]
                         final_df = pd.concat([completed_games_df, upcoming_df], ignore_index=True).drop_duplicates(keep="last")
                     else:
@@ -405,6 +441,7 @@ try:
     )
 except FileNotFoundError:
     st.sidebar.info("💡 Storage Notice: Local baseline CSV file is not written to disk yet.")
+        
 
     
 # ==============================================================================
