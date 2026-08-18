@@ -259,12 +259,13 @@ class SisonkeMathematicalCoreEngine:
         if len(df) < 3: return pd.DataFrame()
         return df.tail(15).copy()
 # ==============================================================================
-# SEGMENT 4 OF 14: PERSISTENT LOCAL FILE STORAGE BRIDGE (ANTI-RAM CACHE WIPE)
+# SEGMENT 4 REVISED: DUAL PARAMETER FETCH TRIGGER BUTTONS & PERSISTENCE HUB
 # ==============================================================================
-# ==============================================================================
-# SEGMENT 4 UPDATE: 43-LEAGUE AUTOMATED DIRECTORY MAPPING & STORAGE HUB
-# ==============================================================================
-# The ID dictionary links your screen text to the API server database codes
+import os
+
+st.sidebar.title("🧠 SISONKE CONTROL PANEL")
+
+# 🏛️ STAGE 1: THE 43-LEAGUE REGULAR-SEASON DIRECTORY MAPPING
 league_directory = {
     "England Championship": 40, "Germany 2. Bundesliga": 79, "Dutch Eredivisie": 72,
     "Belgium Pro League": 144, "France Ligue 2": 62, "Italy Serie B": 74,
@@ -283,39 +284,81 @@ league_directory = {
     "Uruguay Primera División": 284
 }
 
-# Renders the updated selection dropdown menu bar on your phone layout view
+# Render selection dropdown menu layout on screen
 selected_workspace = st.sidebar.selectbox(
     "Select Target League Workspace:", 
     options=list(league_directory.keys())
 )
 active_api_id = league_directory[selected_workspace]
 
-# Your original file uploader remains active right below the selection box
-uploaded_file = st.sidebar.file_uploader("Upload Custom CSV Database Backup", type=["csv"])
-
-st.sidebar.markdown("---")
-st.sidebar.subheader("💾 System Storage Hub")
-
-try:
-    # Safely checks your local drive partition for the current database file
-    with open("master_sisonke_database.csv", "rb") as local_storage_file:
-        csv_bytes_data = local_storage_file.read()
+# BUTTON A: THE ALL-IN-ONE MASTER FETCH BUTTON (History + Fixtures)
+if st.sidebar.button("⚡ Fetch Live Matchday Data", key="sisonke_api_fetch_trigger_btn_2026"):
+    with st.spinner(f"Connecting to Data Gateway... Fetching {selected_workspace} records"):
+        incoming_api_df = fetch_thestatsapi_to_sisonke(active_api_id)
         
-    # Standard Streamlit file download button module link layout
-    st.sidebar.download_button(
-        label="📥 Download CSV from Saved Storage",
-        data=csv_bytes_data,
-        file_name=f"exported_{selected_workspace.lower().replace(' ', '_')}_clean.csv",
-        mime="text/csv",
-        help="Instantly exports the active 22-column regular season file directly to your phone storage."
-    )
-except FileNotFoundError:
-    st.sidebar.info("💡 Storage Notice: Local baseline CSV file is not written to disk yet. Upload a fresh file or trigger the API fetch to activate local storage exports.")
+        if not incoming_api_df.empty:
+            incoming_api_df.to_csv("master_sisonke_database.csv", index=False)
+            st.session_state["full_validation_df"] = incoming_api_df.copy()
+            st.session_state["processed_cache_success"] = True
+            st.sidebar.success(f"📊 {selected_workspace} Synchronized! History and fixtures loaded cleanly.")
+            st.rerun()
+        else:
+            st.sidebar.error("❌ Gateway Connection Timeout. Verify Bearer Token or subscription tier.")
 
+# 📅 BUTTON B: THE DEDICATED FIXTURES TRIGGER BUTTON (Fixtures Only)
+if st.sidebar.button("📅 Sync 3-Month Fixtures Only", key="sisonke_fixtures_exclusive_trigger_v2026"):
+    with st.spinner(f"Updating {selected_workspace} Fixture Calendar..."):
+        # Queries only the current active year's upcoming games matrix
+        import datetime
+        import requests
+        import pandas as pd
+        
+        current_date = datetime.date.today()
+        ninety_days_future = current_date + datetime.timedelta(days=90)
+        
+        # Pulls from your Segment 2 variables behind the glass
+        api_token = "YOUR_PRIVATE_THESTATSAPI_KEY_HERE"
+        url = f"https://thestatsapi.com{active_api_id}&season=2026"
+        headers = {"Authorization": f"Bearer {api_token}", "Accept": "application/json"}
+        
+        try:
+            res = requests.get(url, headers=headers, timeout=10)
+            if res.status_code == 200:
+                payload = res.json().get("data", [])
+                if payload:
+                    raw_fixtures_df = pd.DataFrame(payload)
+                    raw_fixtures_df["match_date_parsed"] = pd.to_datetime(raw_fixtures_df["date"]).dt.date
+                    
+                    # Surgical Filter: Isolate unplayed upcoming matches within the 90-day window
+                    mask = (raw_fixtures_df["status"] == "NS") & (raw_fixtures_df["match_date_parsed"] >= current_date) & (raw_fixtures_df["match_date_parsed"] <= ninety_days_future)
+                    upcoming_df = raw_fixtures_df[mask].drop(columns=["match_date_parsed"], errors="ignore")
+                    
+                    # Merge cleanly with your existing local storage database to protect historical rows
+                    if os.path.exists("master_sisonke_database.csv"):
+                        existing_df = pd.read_csv("master_sisonke_database.csv")
+                        # Keep existing completed games, append fresh upcoming fixture schedule cards
+                        completed_games_df = existing_df[existing_df["status"] == "FT"]
+                        final_df = pd.concat([completed_games_df, upcoming_df], ignore_index=True).drop_duplicates(keep="last")
+                    else:
+                        final_df = upcoming_df
+                        
+                    final_df.to_csv("master_sisonke_database.csv", index=False)
+                    st.session_state["full_validation_df"] = final_df.copy()
+                    st.sidebar.success("📅 3-Month Fixture List Updated Successfully!")
+                    st.rerun()
+                else:
+                    st.sidebar.info("💡 No unplayed fixtures scheduled inside the upcoming 90 days.")
+            else:
+                st.sidebar.error(f"API Refused Request. Error Code: {res.status_code}")
+        except Exception as e:
+            st.sidebar.error(f"Connection Fault: {e}")
+
+# ──────────────────────────────────────────────────────────────────────────────
 st.sidebar.markdown("### 📁 Historical Matchday Upload Port")
 uploaded_file_stream = st.sidebar.file_uploader("Drop your master CSV database file here to append new matchday lines:", type=["csv"], key="csv_manual_uploader_v1")
 
-# --- INITIALIZE PLATFORM SEAMLESSLY FROM LAST KNOWN DISK STORAGE STATE ---
+storage_path = "master_sisonke_database.csv"
+
 if os.path.exists(storage_path):
     try:
         full_validation_df = pd.read_csv(storage_path)
@@ -327,41 +370,31 @@ if os.path.exists(storage_path):
 else:
     full_validation_df = pd.DataFrame()
 
-# --- ACTIVE RE-WRITING APPEND PASS FOR FRESH UPLOADS ---
 if uploaded_file_stream is not None:
     try:
         raw_manual_input_df = pd.read_csv(uploaded_file_stream)
-        
         if os.path.exists(storage_path) and not full_validation_df.empty:
             combined_records_df = pd.concat([full_validation_df, raw_manual_input_df], ignore_index=True)
         else:
             combined_records_df = raw_manual_input_df
-            
         combined_records_df.columns = [str(c).strip().lower().replace("%", "").replace(" ", "_") for c in combined_records_df.columns]
         combined_records_df.drop_duplicates(keep="last", inplace=True)
-        
         combined_records_df.to_csv(storage_path, index=False)
         st.session_state["full_validation_df"] = combined_records_df.copy()
         st.session_state["processed_cache_success"] = True
-        
-        st.sidebar.success("💾 Persistent Storage Sync Complete! Data locked to disk successfully.")
+        st.sidebar.success("💾 Persistent Storage Sync Complete!")
         st.rerun()
     except Exception as write_disk_err:
         st.sidebar.error(f"Local Storage Write Fault: {write_disk_err}")
 
 full_validation_df = st.session_state.get("full_validation_df", pd.DataFrame())
-# ==============================================================================
-# ADDED TO SEGMENT 4 BOTTOM: LOCAL DISK STORAGE HUB DOWNLOAD INTERFACE
-# ==============================================================================
+
 st.sidebar.markdown("---")
 st.sidebar.subheader("💾 System Storage Hub")
 
 try:
-    # Safely checks your local drive storage path for your active database file
     with open("master_sisonke_database.csv", "rb") as local_storage_file:
         csv_bytes_data = local_storage_file.read()
-        
-    # Standard Streamlit file download button module link layout with unique key string
     st.sidebar.download_button(
         label="📥 Download CSV from Saved Storage",
         data=csv_bytes_data,
@@ -371,7 +404,8 @@ try:
         help="Instantly exports the active 22-column regular season file directly to your phone storage."
     )
 except FileNotFoundError:
-    st.sidebar.info("💡 Storage Notice: Local baseline CSV file is not written to disk yet. Upload a fresh file or trigger the API fetch to activate local storage exports.")
+    st.sidebar.info("💡 Storage Notice: Local baseline CSV file is not written to disk yet.")
+
     
 # ==============================================================================
 # SEGMENT 5 OF 14: ADVANCED FUZZY ALIAS MAPPING CORE & TYPE HARDENER
