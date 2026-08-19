@@ -97,7 +97,7 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     ninety_days_future = current_date + datetime.timedelta(days=90)
     
     # 🛑 PASTE YOUR REAL APINUMERIC TOKEN STRINGS INSIDE THESE QUOTES:
-    api_token = "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu" 
+    api_token = "fapi_MSr9G4BWrzxnDEoDGaUEHOoX82FsjIE3" 
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Accept": "application/json"
@@ -191,7 +191,7 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     ninety_days_future = current_date + datetime.timedelta(days=90)
     
     # 🛑 MAKE SURE YOUR REAL TOKEN IS SAFELY LOCKED INSIDE THESE QUOTES:
-    api_token = "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu" 
+    api_token = "fapi_MSr9G4BWrzxnDEoDGaUEHOoX82FsjIE3" 
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Accept": "application/json"
