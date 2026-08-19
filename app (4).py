@@ -422,8 +422,17 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
     if not master_db_df.empty and "home" in master_db_df.columns:
         try:
             # Dynamically pull the exact team names currently selected in your fixture dropdown
-            current_home_team = filtered_fixtures_df.iloc[0]['home'] if not filtered_fixtures_df.empty else ""
-            current_away_team = filtered_fixtures_df.iloc[0]['away'] if not filtered_fixtures_df.empty else ""
+       # ==============================================================================
+# PROPER TEXT PARSER SYNCHRONIZER NATIVE
+# ==============================================================================
+# This extracts the naked team names by splitting your dropdown choice around the word ' vs '
+if " vs " in str(target_fixture):
+    current_home_team = str(target_fixture).split(" vs ")[0].strip()
+    current_away_team = str(target_fixture).split(" vs ")[1].strip()
+else:
+    current_home_team = ""
+    current_away_team = ""
+    
             
             # Check if your uploaded CSV has historical opening and closing odds columns
             # (Standard headers: 'opening_odds_home', 'closing_odds_home', etc.)
