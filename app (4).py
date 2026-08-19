@@ -183,11 +183,11 @@ def fetch_thestatsapi_to_sisonke(league_id, season_year):
     """Bypasses web firewalls completely using clean developer API keys."""
     url = f"https://thestatsapi.com{league_id}&season={season_year}"
     headers = {
-        "Authorization": "Bearer YOUR_PRIVATE_THESTATSAPI_KEY_HERE",
+        "Authorization": "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu",
         "Accept": "application/json"
     }
     
-    response = requests.get(url, headers=headers)
+    response = requests.get(endpoint_url, headers=headers)
     if response.status_code == 200:
         raw_json_data = response.json()
         # Your Universal Structural Converter Module intercepts this data payload instantly!
