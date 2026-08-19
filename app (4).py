@@ -641,7 +641,11 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
             out_close = float(match_state["c_out_price"])
             outright_shift = ((out_open - out_close) / out_open) * 100 if out_open > 0 else 0.0
             
-            st.info(f"**Outright Market Trend:** {format_shift_string(outright_shift)}")
+                        # ==============================================================================
+            # LINE 644 FIXED: MATCHING SYSTEM SHIFT FUNCTION NAME
+            # ==============================================================================
+            # 🟢 CHANGE 'format_shift_string' TO 'check_market_shift' ON THIS ROW:
+            st.info(f"**Outright Market Trend:** {check_market_shift(out_open, out_close)}")
 
         
         st.markdown("---")
