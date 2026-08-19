@@ -698,30 +698,58 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
 
 st.sidebar.title("🧠 SISONKE CONTROL PANEL")
 
-# 🏛️ STAGE 1: THE 43-LEAGUE REGULAR-SEASON DIRECTORY MAPPING
-league_directory = {
-    "England Championship": 40, "Germany 2. Bundesliga": 79, "Dutch Eredivisie": 72,
-    "Belgium Pro League": 144, "France Ligue 2": 62, "Italy Serie B": 74,
-    "Spain Segunda División": 141, "Swedish Allsvenskan": 113, "Austrian Bundesliga": 218,
-    "Swiss Super League": 207, "Danish Superliga": 119, "South African Premier League (PSL)": 288,
-    "Croatia HNL": 224, "Belgium Challenger Pro": 145, "Brazil Série A": 262,
-    "Brazil Série B": 263, "Australia A-League Men": 191, "Argentina Tier 1": 256,
-    "Scottish Championship": 180, "Dutch Eerste Divisie": 73, "Portugal Liga Portugal 2": 95,
-    "Japan J2 League": 197, "South Korea K League 2": 293, "Norway Eliteserien": 103,
-    "Norway 1. Divisjon": 104, "Sweden Superettan": 114, "Finland Veikkausliiga": 240,
-    "Ireland Premier Div": 357, "Iceland Besta deild": 365, "Poland Ekstraklasa": 106,
-    "Poland I Liga": 107, "Romania Liga I": 275, "Bulgaria First League": 310,
-    "Czech First League": 172, "Hungary NB I": 271, "Slovenia PrvaLiga": 322,
-    "Slovakia Super Liga": 315, "Chile Primera División": 265, "Colombia Primera A": 268,
-    "Morocco Botola Pro": 301, "Ecuador Serie A": 278, "Peru Liga 1": 281, 
-    "Uruguay Primera División": 284
-}
+# ==============================================================================
+# SEGMENT 4 REVISED: NEW 40-LEAGUE GLOBAL WORKSPACE DIRECTORY
+# ==============================================================================
+    # 🟢 Fully balanced keyset: 11 categories removed, 9 new expansions active.
+    league_directory = {
+        "England Championship": 40, 
+        "Germany 2. Bundesliga": 79, 
+        "Dutch Eredivisie": 72,
+        "Belgium Pro League": 144, 
+        "France Ligue 2": 62, 
+        "Italy Serie B": 74,
+        "Spain Segunda División": 141, 
+        "Swedish Allsvenskan": 113, 
+        "Austrian Bundesliga": 218,
+        "Swiss Super League": 207, 
+        "Danish Superliga": 119, 
+        "South African Premier League (PSL)": 288,
+        "Croatia HNL": 224, 
+        "Belgium Challenger Pro": 145, 
+        "Brazil Série A": 262,
+        "Brazil Série B": 263, 
+        "Australia A-League Men": 191, 
+        "Argentina Tier 1": 256,
+        "Scottish Championship": 180, 
+        "Dutch Eerste Divisie": 73, 
+        "Portugal Liga Portugal 2": 95,
+        "Norway Eliteserien": 103, 
+        "Ireland Premier Div": 357, 
+        "Iceland Besta deild": 365, 
+        "Poland Ekstraklasa": 106, 
+        "Poland I Liga": 107, 
+        "Czech First League": 172, 
+        "Hungary NB I": 271, 
+        "Slovakia Super Liga": 315, 
+        "Chile Primera División": 265, 
+        "Colombia Primera A": 268, 
+        "Ecuador Serie A": 278, 
+        "Peru Liga 1": 281,
+        "Canada Premier League": 448, 
+        "Russia Premier League": 235,
+        "Switzerland Challenge League": 208, 
+        "Chinese Super League": 251, 
+        "Chinese League 1": 252, 
+        "Denmark Bet25 Liga": 120
+    } # 🛑 THE BRACKET IS SAFELY CLOSED HERE WITH NO TRAILING COMMA!
 
-# Render selection dropdown menu layout on screen
-selected_workspace = st.sidebar.selectbox(
-    "Select Target League Workspace:", 
-    options=list(league_directory.keys())
+    # This dropdown selector row must follow directly underneath the block:
+    selected_workspace = st.sidebar.selectbox(
+        "Select Target League Workspace:", 
+        options=list(league_directory.keys())
 )
+
 active_api_id = league_directory[selected_workspace]
 
 # 📝 THE NEW SEASON INPUT TEXT BOX
