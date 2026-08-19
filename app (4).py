@@ -616,7 +616,13 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
             "Champions League Qualification / Promotion Race (⚡ High Box Intensity)",
             "Derby Matches (📈 Pride Match / High Variance / Form Breaks)"
         ], index=0, key="sb_mot_nv")
-        
+
+                # ==============================================================================
+        # AUTOMATED CHECKBOX CALCULATOR LOCK
+        # ==============================================================================
+        # 🟢 PLACE THIS SINGLE LINE DIRECTLY ABOVE YOUR base_score EQUATION:
+        checked_count = sum(1 for v in match_state["checklist"].values() if v is True)
+    
         # 🧮 STEP 2: ALGORITHMIC CONFIDENCE AUTOMATION
         base_score = (checked_count / len(match_state["checklist"])) * 10
         sentiment_bonus = 0.0
