@@ -608,6 +608,42 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
                 match_state["cl_h15"] = st.number_input("Live Home Over 1.5:", value=float(match_state["cl_h15"]), step=0.05, key="n_ch15")
                 match_state["cl_a15"] = st.number_input("Live Away Over 1.5:", value=float(match_state["cl_a15"]), step=0.05, key="n_ca15")
 
+                # ==============================================================================
+        # ADDED TO SEGMENT 4 TRACKER: BOOKMAKER OUTRIGHTS MARKET MATRICES
+        # ==============================================================================
+        # Initialize unique memory cache fields for your outright price inputs safely
+        outright_keys = ["o_out_price", "c_out_price"]
+        for ok in outright_keys:
+            if ok not in match_state:
+                match_state[ok] = 5.00
+
+        with st.expander("🏆 Bookmaker Outrights Radar (League Winner / Relegation)"):
+            st.markdown("##### Log and track long-term seasonal outright lines.")
+            
+            out_c1, out_c2 = st.columns(2)
+            with out_c1:
+                match_state["o_out_price"] = st.number_input(
+                    f"Opening Outright Price ({current_home_team}):", 
+                    value=float(match_state["o_out_price"]), 
+                    step=0.50, 
+                    key="n_ooutp"
+                )
+            with out_c2:
+                match_state["c_out_price"] = st.number_input(
+                    f"Live Closing Outright Price ({current_home_team}):", 
+                    value=float(match_state["c_out_price"]), 
+                    step=0.50, 
+                    key="n_coutp"
+                )
+                
+            # Automatically calculate the seasonal price action shift delta
+            out_open = float(match_state["o_out_price"])
+            out_close = float(match_state["c_out_price"])
+            outright_shift = ((out_open - out_close) / out_open) * 100 if out_open > 0 else 0.0
+            
+            st.info(f"**Outright Market Trend:** {format_shift_string(outright_shift)}")
+
+        
         st.markdown("---")
         st.header("🧠 Tactical Environmental Modifiers")
         match_state["motivation"] = st.selectbox("Fixture Motivation Level Profile:", [
