@@ -514,93 +514,99 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
     # SEGMENT 4 PART 3: MOVING LINE TRACKER & HARD INDUSTRIAL INTERCEPT WALL
     # ==============================================================================
     with tracking_col:
-        st.header("📈 Moving Line Tracker")
-        st.markdown("Log market price adjustments from Hollywoodbets and Easybet during your research phase.")
-    with tracking_col:
-        st.header("📈 Multi-Market Moving Line Tracker")
-        st.markdown("Log and track price fluctuations across all alternative derivative lines to spot sharp sentiment movements.")
+        st.header("📈 Multi-Day Multi-Market Intercept Tracker")
+        st.markdown("Log market price adjustments across all 22 derivative lines and 4 tracking days to detect sharp money flows.")
         
-        # Initialize missing multi-market dictionary keys inside your memory cache data blocks safely
+        # 👥 STEP 1: PARSER FOR NAKED TEAM NAMES
+        if " vs " in str(target_fixture):
+            current_home_team = str(target_fixture).split(" vs ")[0].strip()
+            current_away_team = str(target_fixture).split(" vs ")[1].strip()
+        else:
+            current_home_team = "Home Team"
+            current_away_team = "Away Team"
+
+        # Initialize all multi-day and multi-market dictionary keys safely in memory cache
         market_keys = [
-            "o_h", "o_d", "o_a", "c_h", "c_d", "c_a",
-            "o_o15", "o_u15", "c_o15", "c_u15", "o_o25", "o_u25", "c_o25", "c_u25",
-            "o_bts_y", "o_bts_n", "c_bts_y", "c_bts_n", "o_h15", "o_a15", "c_h15", "c_a15",
-            "o_h_ah0", "o_a_ah0", "c_h_ah0", "c_a_ah0", "o_h_eh1", "o_a_eh1", "c_h_eh1", "c_a_eh1"
+            "op_h", "op_a", "d3_h", "d3_a", "db_h", "db_a", "cl_h", "cl_a", # 1X2 Match Winner
+            "op_o25", "op_u25", "cl_o25", "cl_u25", # Goal Totals Over/Under 2.5
+            "op_btsy", "op_btsn", "cl_btsy", "cl_btsn", # Both Teams To Score
+            "op_h15", "op_a15", "cl_h15", "cl_a15" # Team Exact Totals Over 1.5
         ]
         for mk in market_keys:
             if mk not in match_state:
-                match_state[mk] = 1.90 if "o_" in mk or "u_" in mk or "bts_" in mk else (2.10 if "_h" in mk else 3.10)
+                match_state[mk] = 2.00
 
         # Mathematical Calculation Engine to evaluate line movement deltas automatically
         def check_market_shift(open_odds, current_odds):
             if open_odds <= 0 or current_odds <= 0: return "0.0% Stable"
             delta_pct = ((open_odds - current_odds) / open_odds) * 100
-            if delta_pct > 1.5: return f"🔥 STEAM: Dropped by {abs(delta_pct):.1f}% (Sharp Action)"
+            if delta_pct > 1.5: return f"🔥 STEAM: Dropped by {abs(delta_pct):.1f}% (Sharp Inflow)"
             elif delta_pct < -1.5: return f"⚠️ DRIFT: Rose by {abs(delta_pct):.1f}% (Public Fade)"
             return "Stable Line"
 
-        # 📦 DROPDOWN BLOCK 1: STANDARD THREE-WAY MATCH WINNER MARGINS
-        with st.expander("⚽ 1X2 Match Winner Prices", expanded=True):
-            m_c1, m_c2 = st.columns(2)
-            with m_c1:
-                match_state["o_h"] = st.number_input("Opening Home (1):", value=float(match_state["o_h"]), step=0.05, key="n_oh")
-                match_state["o_d"] = st.number_input("Opening Draw (X):", value=float(match_state["o_d"]), step=0.05, key="n_od")
-                match_state["o_a"] = st.number_input("Opening Away (2):", value=float(match_state["o_a"]), step=0.05, key="n_oa")
-            with m_c2:
-                match_state["c_h"] = st.number_input("Live Home (1):", value=float(match_state["c_h"]), step=0.05, key="n_ch")
-                match_state["c_d"] = st.number_input("Live Draw (X):", value=float(match_state["c_d"]), step=0.05, key="n_cd")
-                match_state["c_a"] = st.number_input("Live Away (2):", value=float(match_state["c_a"]), step=0.05, key="n_ca")
-            st.caption(f"**Trend:** Home: {check_market_shift(match_state['o_h'], match_state['c_h'])} | Away: {check_market_shift(match_state['o_a'], match_state['c_a'])}")
+        # 📦 DROPDOWN 1: 1X2 MATCH WINNER COVERING ALL 4 DAYS
+        with st.expander("⚽ 1X2 Match Winner Matrix (4-Day Radar)", expanded=True):
+            day_c1, day_c2, day_c3, day_c4 = st.columns(4)
+            with day_c1:
+                st.markdown("**🏁 7 Days Out**")
+                match_state["op_h"] = st.number_input(f"{current_home_team} (7D):", value=float(match_state["op_h"]), step=0.05, key="m_oph")
+                match_state["op_a"] = st.number_input(f"{current_away_team} (7D):", value=float(match_state["op_a"]), step=0.05, key="m_opa")
+            with day_c2:
+                st.markdown("**📅 3 Days Out**")
+                match_state["d3_h"] = st.number_input(f"{current_home_team} (3D):", value=float(match_state["d3_h"]), step=0.05, key="m_d3h")
+                match_state["d3_a"] = st.number_input(f"{current_away_team} (3D):", value=float(match_state["d3_a"]), step=0.05, key="m_d3a")
+            with day_c3:
+                st.markdown("**🔍 Day Before**")
+                match_state["db_h"] = st.number_input(f"{current_home_team} (DB):", value=float(match_state["db_h"]), step=0.05, key="m_dbh")
+                match_state["db_a"] = st.number_input(f"{current_away_team} (DB):", value=float(match_state["db_a"]), step=0.05, key="m_dba")
+            with day_c4:
+                st.markdown("**🚨 Closing Line**")
+                match_state["cl_h"] = st.number_input(f"{current_home_team} (CL):", value=float(match_state["cl_h"]), step=0.05, key="m_clh")
+                match_state["cl_a"] = st.number_input(f"{current_away_team} (CL):", value=float(match_state["cl_a"]), step=0.05, key="m_cla")
 
-        # 📦 DROPDOWN BLOCK 2: GOAL TOTALS OVER/UNDER SCALING SHEET
+        # 📊 LIVE AUTOMATED TEAM STATUS CARDS (Calculated purely from your inputs above!)
+        st.markdown("##### 📊 Real-Time Input Line Shift Status")
+        home_live_shift = ((float(match_state["op_h"]) - float(match_state["cl_h"])) / float(match_state["op_h"])) * 100 if float(match_state["op_h"]) > 0 else 0.0
+        away_live_shift = ((float(match_state["op_a"]) - float(match_state["cl_a"])) / float(match_state["op_a"])) * 100 if float(match_state["op_a"]) > 0 else 0.0
+
+        t_col1, t_col2 = st.columns(2)
+        with t_col1:
+            st.metric(label=f"🏠 {current_home_team} Total Trend", value=f"{home_live_shift:.1f}%", delta="🔥 Sharp Steam" if home_live_shift > 1.5 else ("⚠️ Market Drift" if home_live_shift < -1.5 else "Stable Line"))
+        with t_col2:
+            st.metric(label=f"✈️ {current_away_team} Total Trend", value=f"{away_live_shift:.1f}%", delta="🔥 Sharp Steam" if away_live_shift > 1.5 else ("⚠️ Market Drift" if away_live_shift < -1.5 else "Stable Line"))
+
+        # 📦 DROPDOWN 2: OVER/UNDER GOAL TOTALS ALTERNATIVE LINES
         with st.expander("🥅 Over / Under Goal Totals"):
             g_c1, g_c2 = st.columns(2)
             with g_c1:
-                match_state["o_o15"] = st.number_input("Opening Over 1.5:", value=float(match_state["o_o15"]), step=0.05, key="n_oo15")
-                match_state["o_u15"] = st.number_input("Opening Under 1.5:", value=float(match_state["o_u15"]), step=0.05, key="n_ou15")
-                match_state["o_o25"] = st.number_input("Opening Over 2.5:", value=float(match_state["o_o25"]), step=0.05, key="n_oo25")
-                match_state["o_u25"] = st.number_input("Opening Under 2.5:", value=float(match_state["o_u25"]), step=0.05, key="n_ou25")
+                st.markdown("**🏁 Opening Lines**")
+                match_state["op_o25"] = st.number_input("Opening Over 2.5:", value=float(match_state["op_o25"]), step=0.05, key="n_oo25")
+                match_state["op_u25"] = st.number_input("Opening Under 2.5:", value=float(match_state["op_u25"]), step=0.05, key="n_ou25")
             with g_c2:
-                match_state["c_o15"] = st.number_input("Live Over 1.5:", value=float(match_state["c_o15"]), step=0.05, key="n_co15")
-                match_state["c_u15"] = st.number_input("Live Under 1.5:", value=float(match_state["c_u15"]), step=0.05, key="n_cu15")
-                match_state["c_o25"] = st.number_input("Live Over 2.5:", value=float(match_state["c_o25"]), step=0.05, key="n_co25")
-                match_state["c_u25"] = st.number_input("Live Under 2.5:", value=float(match_state["c_u25"]), step=0.05, key="n_cu25")
-            st.caption(f"**Trend:** Over 2.5: {check_market_shift(match_state['o_o25'], match_state['c_o25'])} | Under 2.5: {check_market_shift(match_state['o_u25'], match_state['c_u25'])}")
+                st.markdown("**🚨 Live Closing Lines**")
+                match_state["cl_o25"] = st.number_input("Live Over 2.5:", value=float(match_state["cl_o25"]), step=0.05, key="n_co25")
+                match_state["cl_u25"] = st.number_input("Live Under 2.5:", value=float(match_state["cl_u25"]), step=0.05, key="n_cu25")
+            st.caption(f"**Goal Trend:** Over 2.5: {check_market_shift(match_state['op_o25'], match_state['cl_o25'])} | Under 2.5: {check_market_shift(match_state['op_u25'], match_state['cl_u25'])}")
 
-        # 📦 DROPDOWN BLOCK 3: BOTH TEAMS TO SCORE (BTTS) COEFFICIENTS
+        # 📦 DROPDOWN 3: BOTH TEAMS TO SCORE COEFFICIENTS
         with st.expander("💥 Both Teams to Score (BTTS)"):
             b_c1, b_c2 = st.columns(2)
             with b_c1:
-                match_state["o_bts_y"] = st.number_input("Opening BTTS Yes:", value=float(match_state["o_bts_y"]), step=0.05, key="n_obtsy")
-                match_state["o_bts_n"] = st.number_input("Opening BTTS No:", value=float(match_state["o_bts_n"]), step=0.05, key="n_obtsn")
+                match_state["op_btsy"] = st.number_input("Opening BTTS Yes:", value=float(match_state["op_btsy"]), step=0.05, key="n_obtsy")
+                match_state["op_btsn"] = st.number_input("Opening BTTS No:", value=float(match_state["op_btsn"]), step=0.05, key="n_obtsn")
             with b_c2:
-                match_state["c_bts_y"] = st.number_input("Live BTTS Yes:", value=float(match_state["c_bts_y"]), step=0.05, key="n_cbtsy")
-                match_state["c_bts_n"] = st.number_input("Live BTTS No:", value=float(match_state["c_bts_n"]), step=0.05, key="n_cbtsn")
-            st.caption(f"**Trend:** BTTS Yes: {check_market_shift(match_state['o_bts_y'], match_state['c_bts_y'])}")
+                match_state["cl_btsy"] = st.number_input("Live BTTS Yes:", value=float(match_state["cl_btsy"]), step=0.05, key="n_cbtsy")
+                match_state["cl_btsn"] = st.number_input("Live BTTS No:", value=float(match_state["cl_btsn"]), step=0.05, key="n_cbtsn")
 
-        # 📦 DROPDOWN BLOCK 4: INDIVIDUAL TEAM ISOLATED TOTAL OVER 1.5 LINES
+        # 📦 DROPDOWN 4: INDIVIDUAL TEAM ISOLATED GOAL VOLUME LINES
         with st.expander("🛡️ Team Exact Totals (Over 1.5)"):
             t_c1, t_c2 = st.columns(2)
             with t_c1:
-                match_state["o_h15"] = st.number_input("Opening Home Over 1.5:", value=float(match_state["o_h15"]), step=0.05, key="n_oh15")
-                match_state["o_a15"] = st.number_input("Opening Away Over 1.5:", value=float(match_state["o_a15"]), step=0.05, key="n_oa15")
+                match_state["op_h15"] = st.number_input("Opening Home Over 1.5:", value=float(match_state["op_h15"]), step=0.05, key="n_oh15")
+                match_state["op_a15"] = st.number_input("Opening Away Over 1.5:", value=float(match_state["op_a15"]), step=0.05, key="n_oa15")
             with t_c2:
-                match_state["c_h15"] = st.number_input("Live Home Over 1.5:", value=float(match_state["c_h15"]), step=0.05, key="n_ch15")
-                match_state["c_a15"] = st.number_input("Live Away Over 1.5:", value=float(match_state["c_a15"]), step=0.05, key="n_ca15")
-
-        # 📦 DROPDOWN BLOCK 5: ASIAN HANDICAP (0) & EUROPEAN HANDICAP HANDICAPS EXOTICS
-        with st.expander("💎 Exotic Asian & European Handicaps"):
-            h_c1, h_c2 = st.columns(2)
-            with h_c1:
-                match_state["o_h_ah0"] = st.number_input("Opening Home AH(0) Draw-No-Bet:", value=float(match_state["o_h_ah0"]), step=0.05, key="n_oah0h")
-                match_state["o_a_ah0"] = st.number_input("Opening Away AH(0) Draw-No-Bet:", value=float(match_state["o_a_ah0"]), step=0.05, key="n_oah0a")
-                match_state["o_h_eh1"] = st.number_input("Opening Home EH(-1):", value=float(match_state["o_h_eh1"]), step=0.05, key="n_oeh1h")
-                match_state["o_a_eh1"] = st.number_input("Opening Away EH(+1):", value=float(match_state["o_a_eh1"]), step=0.05, key="n_oeh1a")
-            with h_c2:
-                match_state["c_h_ah0"] = st.number_input("Live Home AH(0) Draw-No-Bet:", value=float(match_state["c_h_ah0"]), step=0.05, key="n_cah0h")
-                match_state["c_a_ah0"] = st.number_input("Live Away AH(0) Draw-No-Bet:", value=float(match_state["c_a_ah0"]), step=0.05, key="n_cah0a")
-                match_state["c_h_eh1"] = st.number_input("Live Home EH(-1):", value=float(match_state["c_h_eh1"]), step=0.05, key="n_ceh1h")
-                match_state["c_a_eh1"] = st.number_input("Live Away EH(+1):", value=float(match_state["c_a_eh1"]), step=0.05, key="n_ceh1a")
+                match_state["cl_h15"] = st.number_input("Live Home Over 1.5:", value=float(match_state["cl_h15"]), step=0.05, key="n_ch15")
+                match_state["cl_a15"] = st.number_input("Live Away Over 1.5:", value=float(match_state["cl_a15"]), step=0.05, key="n_ca15")
 
         st.markdown("---")
         st.header("🧠 Tactical Environmental Modifiers")
@@ -611,35 +617,31 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
             "Derby Matches (📈 Pride Match / High Variance / Form Breaks)"
         ], index=0, key="sb_mot_nv")
         
-        checked_count = sum(1 for v in match_state["checklist"].values() if v is True)
+        # 🧮 STEP 2: ALGORITHMIC CONFIDENCE AUTOMATION
         base_score = (checked_count / len(match_state["checklist"])) * 10
-        
         sentiment_bonus = 0.0
         if "Relegation" in match_state["motivation"] or "Derby" in match_state["motivation"]:
             sentiment_bonus -= 1.0
         elif "Champions" in match_state["motivation"]:
             sentiment_bonus += 0.5
             
-        # 🔗 ALGORITHMIC VALUE SYNCHRONIZER: Trigger bonuses if sharp steam aligns with your profile bias
-        home_odds_delta = ((match_state["o_h"] - match_state["c_h"]) / match_state["o_h"]) * 100 if match_state["o_h"] > 0 else 0
-        if home_odds_delta > 2.0:
-            sentiment_bonus += 1.0 
-        elif home_odds_delta < -3.0:
-            sentiment_bonus -= 1.5 
+        if home_live_shift > 2.0 or away_live_shift > 2.0:
+            sentiment_bonus += 1.0  # Stream confirmation reward
+        elif home_live_shift < -3.0 or away_live_shift < -3.0:
+            sentiment_bonus -= 1.5  # Market divergence penalty
 
         auto_confidence = max(1.0, min(10.0, base_score + sentiment_bonus))
-        
         st.metric(label="Calculated Confidence Rating (1-10)", value=f"{auto_confidence:.1f} / 10")
         
         if checked_count < 8:
-            st.error("🛑 PASS / NO BET: Information scarcity detected. Check more validation tasks.")
+            st.error("🛑 PASS / NO BET: Information scarcity detected. Check more checklist tasks.")
         elif auto_confidence >= 7.5:
             st.success("🎯 VALUE TRADING MODE: High verification level matched with solid market sentiment.")
         else:
             st.warning("🔷 ALTERNATIVE LINE LOCK: Mixed data signals or negative price movements.")
             
         match_state["notes"] = st.text_area("Match Findings & Lineup Leak Updates Diary:", value=match_state["notes"], key="ta_notes_nv")
-    
+                
         
 
 
