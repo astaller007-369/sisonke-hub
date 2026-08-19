@@ -349,7 +349,7 @@ st.sidebar.title("🧠 SISONKE CONTROL PANEL")
 active_app_tab = st.sidebar.radio(
     "Select Active Console Workspace Panel:",
     options=["📊 Predictive Analytics Hub", "📝 Research & Sentiment Tracker"],
-    key="sisonke_platform_navigation_radio_v2026"
+    key="sisonke_platform_navigation_radio_v2026_final_lock"
 )
 st.sidebar.markdown("---")
 
