@@ -106,7 +106,9 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     combined_records_list = []
     
     for season in target_seasons:
-        endpoint_url = f"https://thestatsapi.com{league_id}&season={season}"
+        # 🟢 CORRECTED BASE URL MATRIX:
+        endpoint_url = f"https://api.thestatsapi.com{league_id}&season={season}"
+            
         try:
             server_response = requests.get(endpoint_url, headers=headers, timeout=15)
             if server_response.status_code == 200:
@@ -200,7 +202,9 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     combined_records_list = []
     
     for season in target_seasons:
-        endpoint_url = f"https://thestatsapi.com{league_id}&season={season}"
+                # 🟢 CORRECTED BASE URL MATRIX:
+        endpoint_url = f"https://api.thestatsapi.com{active_api_id}&season={newest_active_year}"
+        
         try:
             server_response = requests.get(endpoint_url, headers=headers, timeout=15)
             if server_response.status_code == 200:
