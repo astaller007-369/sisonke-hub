@@ -702,7 +702,7 @@ st.sidebar.title("🧠 SISONKE CONTROL PANEL")
 # SEGMENT 4 REVISED: NEW 40-LEAGUE GLOBAL WORKSPACE DIRECTORY
 # ==============================================================================
     # 🟢 Fully balanced keyset: 11 categories removed, 9 new expansions active.
-    league_directory = {
+league_directory = {
         "England Championship": 40, 
         "Germany 2. Bundesliga": 79, 
         "Dutch Eredivisie": 72,
@@ -745,7 +745,7 @@ st.sidebar.title("🧠 SISONKE CONTROL PANEL")
     } # 🛑 THE BRACKET IS SAFELY CLOSED HERE WITH NO TRAILING COMMA!
 
     # This dropdown selector row must follow directly underneath the block:
-    selected_workspace = st.sidebar.selectbox(
+selected_workspace = st.sidebar.selectbox(
         "Select Target League Workspace:", 
         options=list(league_directory.keys())
 )
