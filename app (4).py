@@ -1556,85 +1556,79 @@ with tab_standings:
             winner_squad = max(current_iter_standings, key=current_iter_standings.get)
             simulated_championship_tally[winner_squad] += 1
             
+        # ==============================================================================
+        # REVISED SEGMENT 13: SYNCHRONIZED 6-COLUMN OUTRIGHT VALUE LEDGER
+        # ==============================================================================
+        st.markdown("---")
+        st.subheader("🏆 Bookmaker Outright Odds vs Monte Carlo Forecasts")
+        st.markdown("Select a team and type their live outright price from Hollywoodbets or Easybet to calculate real-world Expected Value (EV) Alpha.")
+
+        # Create a clean dual column layout box on your mobile viewport screen panel
+        out_pred_col1, out_pred_col2 = st.columns(2)
+
+        with out_pred_col1:
+            # Dropdown menu to choose your target team natively out from your active data list
+            target_audit_team = st.selectbox(
+                "Select Team to Audit for Outright Value:",
+                options=sorted(all_teams_raw),
+                key="pred_tab_outright_team_selector"
+            )
+        with out_pred_col2:
+            # Interactive entry box to type your live market prices right on the layout panel
+            live_retail_outright_odds = st.number_input(
+                f"Enter Live Outright Odds for {target_audit_team}:",
+                min_value=1.01,
+                value=5.00,
+                step=0.50,
+                key="pred_tab_outright_odds_input_box"
+            )
+
+        # Build your comprehensive 6-column data ledger payload matrix natively entirely offline
         outright_rendered_payload = []
         for team in sorted(all_teams_raw):
             final_win_probability = simulated_championship_tally[team] / num_simulations_pass
             clamped_prob = max(0.001, final_win_probability)
             fair_zero_margin_odds = 1.0 / clamped_prob
-            user_input_outright_price = float(odds_1 * 1.5)
-            outright_expected_value = (clamped_prob * user_input_outright_price) - 1.0
-            outright_rendered_payload.append({"Competing Squad": team, "Model Win Probability (%)": f"{final_win_probability * 100:.1f}%", "Fair Value Odds Line": f"{fair_zero_margin_odds:.2f}", "Sportsbook Outright Odds": f"{user_input_outright_price:.2f}", "Outright Forecast EV (%)": f"{outright_expected_value * 100:+.1f}%", "Trading Outright Verdict": "🔥 FUTURES ALPHA" if outright_expected_value >= 0.05 else "⚠️ NEGATIVE HOLD"})
-        st.dataframe(pd.DataFrame(outright_rendered_payload).sort_values(by="Model Win Probability (%)", ascending=False), use_container_width=True, hide_index=True)
-        # ==============================================================================
-# INTEGRATED MONTE CARLO OUTRIGHTS PRICING & EXPECTED VALUE ENGINE
-# ==============================================================================
-st.markdown("---")
-st.subheader("🏆 Bookmaker Outright Odds vs Monte Carlo Forecasts")
-st.markdown("Type in the live outright odds from Hollywoodbets or Easybet to scan for market pricing errors.")
-
-# 1. Grab all unique team names from your active dataset to create a dropdown list
-if 'current_iter_standings' in locals() or 'final_simulation_table' in locals() or 'full_validation_df' in os.environ:
-    try:
-        # Pulls team list dynamically from your existing data frames
-        simulated_teams_list = sorted(full_validation_df["home"].dropna().unique().tolist())
-    except Exception:
-        simulated_teams_list = ["Select Team Workspace"]
-else:
-    simulated_teams_list = ["Select Team Workspace"]
-
-# Create a clean dual column layout for your phone screen layout panel
-out_pred_col1, out_pred_col2 = st.columns(2)
-
-with out_pred_col1:
-    # Dropdown to choose which team you want to audit for outright value
-    target_audit_team = st.selectbox(
-        "Select Team to Audit for Outright Value:",
-        options=simulated_teams_list,
-        key="pred_tab_outright_team_selector"
-    )
-    
-    # Input box to type the bookmaker outright odds for that specific team
-    live_retail_outright_odds = st.number_input(
-        f"Enter Live Outright Odds for {target_audit_team}:",
-        min_value=1.01,
-        value=5.00,
-        step=0.50,
-        key="pred_tab_outright_odds_input_box"
-    )
-    
-    # Converts the bookmaker odds to their implied percentage probability automatically
-    implied_bookie_win_percentage = (1 / live_retail_outright_odds) * 100
-    st.metric(label="Bookmaker Implied Win Chance", value=f"{implied_bookie_win_percentage:.1f}%")
-
-with out_pred_col2:
-    # 🧮 EXTRACT SIMULATION MATH NATIVELY
-    # Reads directly from your 10,000-Iteration Monte Carlo champion dictionary container
-    try:
-        # Adjust 'championship_probabilities_dict' to match your exact variable name if it differs
-        if 'championship_probabilities_dict' in locals():
-            model_simulated_win_pct = championship_probabilities_dict.get(target_audit_team, 0.0) * 100
-        elif 'champion_counts' in locals():
-            # If your app counts champion trophies directly: (trophies / 10000) * 100
-            model_simulated_win_pct = (champion_counts.get(target_audit_team, 0) / 10000) * 100
-        else:
-            # Safe temporary fallback baseline if your variable is named differently
-            model_simulated_win_pct = 15.0
             
-        st.metric(label=f"Model Simulated Win Chance ({target_audit_team})", value=f"{model_simulated_win_pct:.1f}%")
-    except Exception:
-        model_simulated_win_pct = 15.0
-        st.metric(label="Model Simulated Win Chance", value=f"{model_simulated_win_pct:.1f}%")
+            # 🟢 THE REAL-TIME SYNC: If this row matches your selected team, read your screen entry!
+            if team == target_audit_team:
+                user_input_outright_price = float(live_retail_outright_odds)
+            else:
+                # Fallback baseline line anchor if you haven't typed an explicit price for this team yet
+                user_input_outright_price = fair_zero_margin_odds 
+                
+            outright_expected_value = (clamped_prob * user_input_outright_price) - 1.0
+            
+            outright_rendered_payload.append({
+                "Competing Squad": team, 
+                "Model Win Probability (%)": f"{final_win_probability * 100:.1f}%", 
+                "Fair Value Odds Line": f"{fair_zero_margin_odds:.2f}", 
+                "Sportsbook Outright Odds": f"{user_input_outright_price:.2f}", 
+                "Outright Forecast EV (%)": f"{outright_expected_value * 100:+.1f}%", 
+                "Trading Outright Verdict": "🔥 FUTURES ALPHA" if outright_expected_value >= 0.05 else ("🛑 TRAP / FADE" if outright_expected_value <= -0.05 else "🔷 EFFICIENT HOLD")
+            })
+            
+        # Convert your database payload array cleanly into an automated pandas tracking data frame grid
+        final_ledger_df = pd.DataFrame(outright_rendered_payload)
+        
+        # Render the pristine 6-column value matrix ledger live on your display screen pane view
+        st.dataframe(
+            final_ledger_df.sort_values(by="Model Win Probability (%)", ascending=False), 
+            use_container_width=True, 
+            hide_index=True
+        )
 
-# 📊 THE ALGORITHMIC ALPHA SPOTLIGHT
-# Subtracts the bookmaker probability from your Monte Carlo probability to find the net edge
-outright_mathematical_edge = model_simulated_win_pct - implied_bookie_win_percentage
+        # 📊 THE ALGORITHMIC ALPHA SPOTLIGHT PANEL
+        # Extracts your selected team's final metrics directly from your computed table array rows
+        selected_row_data = final_ledger_df[final_ledger_df["Competing Squad"] == target_audit_team].iloc[0]
+        net_ev_percentage = float(selected_row_data["Outright Forecast EV (%)"].replace("%", "").replace("+", ""))
 
-if outright_mathematical_edge > 2.5:
-    st.success(f"🎯 OUTRIGHT VALUE ALPHA DETECTED: Your Monte Carlo engine shows a clear +{outright_mathematical_edge:.1f}% edge over the house! This outright line is underpriced.")
-elif outright_mathematical_edge < -2.5:
-    st.error(f"🛑 MARKET VALUE TRAP: The bookies are overpricing this line. Your simulations show they have a {abs(outright_mathematical_edge):.1f}% lower chance than the odds suggest.")
-else:
-    st.info(f"🔷 MARKET EFFICIENCY IN LINE: Sportsbook pricing matches your 10,000-iteration data timeline within a tight {abs(outright_mathematical_edge):.1f}% error margin.")
+        if net_ev_percentage >= 5.0:
+            st.success(f"🎯 OUTRIGHT VALUE ALPHA DETECTED: Your Monte Carlo engine shows a clear +{net_ev_percentage:.1f}% Expected Value edge over the house for {target_audit_team}! This line is under priced.")
+        elif net_ev_percentage <= -5.0:
+            st.error(f"🛑 MARKET VALUE TRAP: Retail books are heavily overpricing {target_audit_team} by {abs(net_ev_percentage):.1f}%. Avoid outright futures exposure.")
+        else:
+            st.info(f"🔷 MARKET EFFICIENCY IN LINE: Sportsbook pricing for {target_audit_team} matches your 10,000-iteration lookback matrix within a tight {abs(net_ev_percentage):.1f}% error margin.")
         
                 # ==============================================================================
 # SEGMENT 14 OF 14: UNIFIED AUDIT DISPLAY & HARD HARD-DISK CLV CURVES
