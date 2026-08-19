@@ -191,7 +191,7 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     ninety_days_future = current_date + datetime.timedelta(days=90)
     
     # 🛑 MAKE SURE YOUR REAL TOKEN IS SAFELY LOCKED INSIDE THESE QUOTES:
-    api_token = "YOUR_PRIVATE_THESTATSAPI_KEY_HERE" 
+    api_token = "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu" 
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Accept": "application/json"
@@ -328,6 +328,24 @@ class SisonkeMathematicalCoreEngine:
 # SEGMENT 4 REVISED: COMPLETE DIRECTORY, SEASONS BOX & TRIGGER ENGINE
 # ==============================================================================
 import os
+# ==============================================================================
+# SEGMENT 4 CORE ADDITION: EXPERT WORKSPACE PLATFORM NAVIGATION SWITCH
+# ==============================================================================
+# Renders an interactive layout switcher directly onto your sidebar dashboard panel
+active_app_tab = st.sidebar.radio(
+    "Select Active Console Workspace Panel:",
+    options=["📊 Predictive Analytics Hub", "📝 Research & Sentiment Tracker"],
+    key="sisonke_platform_navigation_radio_v2026"
+)
+st.sidebar.markdown("---")
+
+# Wrap your entire existing Segment 4 code layout tightly inside this conditional check!
+if active_app_tab == "📊 Predictive Analytics Hub":
+    # Ensure your league dropdown directory dictionary sits directly under here:
+    league_directory = {
+        "England Championship": 40, "Germany 2. Bundesliga": 79, "Dutch Eredivisie": 72,
+        "Belgium Pro League": 144, "France Ligue 2": 62, "Italy Serie B": 74,
+
 
 st.sidebar.title("🧠 SISONKE CONTROL PANEL")
 
@@ -1275,3 +1293,38 @@ with tab_past:
             efficiency_display_df = past_h.sort_values(by="match_timestamp", ascending=False).reset_index(drop=True)[["match_timestamp", "home_team", "away_team", "Real_Goal_Difference", "Proxy_xG_Difference", "Variance_Overperformance_Delta", "home_goals", "Home_xG_Proxy", "away_goals", "Away_xG_Proxy"]]
             efficiency_display_df["match_timestamp"] = pd.to_datetime(efficiency_display_df["match_timestamp"]).dt.strftime('%Y-%m-%d')
             st.dataframe(efficiency_display_df, use_container_width=True, hide_index=True)
+# ==============================================================================
+# ABSOLUTE TAIL END OF SCRIPT: ROUTING LINK TO RUN THE TRACKER MULTI-VIEW NATIVELY
+# ==============================================================================
+else:
+    # This block executes automatically when you click the "Research" tab on your screen panel
+    st.subheader("📝 Sisonke Automated Research & Sentiment Desk")
+    st.markdown("---")
+    
+    # 🏛️ STORAGE SYSTEM INITIALIZATION LOCKS
+    checklist_save_path = "sisonke_checklist_storage.json"
+    database_csv_path = "master_sisonke_database.csv"
+    
+    if os.path.exists(checklist_save_path):
+        try:
+            with open(checklist_save_path, "r") as f:
+                persisted_data = json.load(f)
+        except Exception:
+            persisted_data = {}
+    else:
+        persisted_data = {}
+        
+    if os.path.exists(database_csv_path):
+        try:
+            master_db_df = pd.read_csv(database_csv_path)
+            master_db_df.columns = [str(c).strip().lower().replace(" ", "_") for c in master_db_df.columns]
+            if "league" in master_db_df.columns:
+                available_leagues = sorted(master_db_df["league"].dropna().unique().tolist())
+            else:
+                available_leagues = ["Default Workspace"]
+        except Exception:
+            available_leagues = ["Upload Database to Sync"]
+            master_db_df = pd.DataFrame()
+    else:
+        available_leagues = ["No Active Database Connected"]
+        master_db_df = pd.DataFrame()
