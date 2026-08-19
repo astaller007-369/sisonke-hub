@@ -420,18 +420,14 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
 
     # Guard check: Ensure your master spreadsheet database contains old line columns to read
     if not master_db_df.empty and "home" in master_db_df.columns:
-        try:
-            # Dynamically pull the exact team names currently selected in your fixture dropdown
-       # ==============================================================================
-# PROPER TEXT PARSER SYNCHRONIZER NATIVE
-# ==============================================================================
-# This extracts the naked team names by splitting your dropdown choice around the word ' vs
-            if " vs " in str(target_fixture):
-            current_home_team = str(target_fixture).split(" vs ")[0].strip()
-            current_away_team = str(target_fixture).split(" vs ")[1].strip()
-else:
-    current_home_team = ""
-    current_away_team = ""
+         try:
+             if " vs " in str(target_fixture):
+                 current_home_team = str(target_fixture).split(" vs ")[0].strip()
+                 current_away_team = str(target_fixture).split(" vs ")[1].strip()
+             else:
+                 current_home_team = ""
+                 current_away_team = ""
+
     
             
             # Check if your uploaded CSV has historical opening and closing odds columns
