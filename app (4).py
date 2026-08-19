@@ -507,7 +507,7 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
     with tracking_col:
         st.header("📈 Moving Line Tracker")
         st.markdown("Log market price adjustments from Hollywoodbets and Easybet during your research phase.")
-     with tracking_col:
+    with tracking_col:
         st.header("📈 Multi-Market Moving Line Tracker")
         st.markdown("Log and track price fluctuations across all alternative derivative lines to spot sharp sentiment movements.")
         
