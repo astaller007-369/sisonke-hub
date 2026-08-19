@@ -420,13 +420,17 @@ if active_app_tab == "📝 Research & Sentiment Tracker":
 
     # Guard check: Ensure your master spreadsheet database contains old line columns to read
     if not master_db_df.empty and "home" in master_db_df.columns:
-         try:
-             if " vs " in str(target_fixture):
-                 current_home_team = str(target_fixture).split(" vs ")[0].strip()
-                 current_away_team = str(target_fixture).split(" vs ")[1].strip()
-             else:
-                 current_home_team = ""
-                 current_away_team = ""
+            # 🟢 CRASH FIX: Move the team splitter logic BEFORE the try statement block
+        if " vs " in str(target_fixture):
+            current_home_team = str(target_fixture).split(" vs ")[0].strip()
+            current_away_team = str(target_fixture).split(" vs ")[1].strip()
+        else:
+            current_home_team = ""
+            current_away_team = ""
+
+        try:
+            # The try block now sits safely below the text splitting equations
+            has_odds_columns = "opening_odds_home" in master_db_df.columns and "closing_odds_home" in master_db_df.columns
 
     
             
