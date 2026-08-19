@@ -172,29 +172,72 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     # Your Universal Structural Converter Module intercepts this clean output layout right here!
     return final_sanitized_pipeline_df.drop(columns=["match_date_parsed"], errors="ignore")
 
-
 st.title("🦅 Sisonke Football Predictive Analytics Hub")
 st.caption("we beat the odds.")
 import streamlit as st
 import requests
 import pandas as pd
 
-def fetch_thestatsapi_to_sisonke(league_id, season_year):
-    """Bypasses web firewalls completely using clean developer API keys."""
-    endpoint_url = f"https://thestatsapi.com{league_id}&season={season_year}"
+# ==============================================================================
+# SEGMENT 2 CORE SAFETY PATCH: DYNAMIC SEASONS INPUT FETCH ENGINE
+# ==============================================================================
+def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
+    """Clean commercial server connection. Bypasses all web firewalls."""
+    import datetime
+    import requests
+    import pandas as pd
+    
+    current_date = datetime.date.today()
+    ninety_days_future = current_date + datetime.timedelta(days=90)
+    
+    # 🛑 MAKE SURE YOUR REAL TOKEN IS SAFELY LOCKED INSIDE THESE QUOTES:
+    api_token = "YOUR_PRIVATE_THESTATSAPI_KEY_HERE" 
     headers = {
-        "Authorization": "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu",
+        "Authorization": f"Bearer {api_token}",
         "Accept": "application/json"
     }
     
-    response = requests.get(endpoint_url, headers=headers)
-    if response.status_code == 200:
-        raw_json_data = response.json()
-        # Your Universal Structural Converter Module intercepts this data payload instantly!
-        return pd.DataFrame(raw_json_data.get("data", []))
-    else:
-        st.error(f"❌ API Gateway Refused Connection. Status Code: {response.status_code}")
+    combined_records_list = []
+    
+    for season in target_seasons:
+        endpoint_url = f"https://thestatsapi.com{league_id}&season={season}"
+        try:
+            server_response = requests.get(endpoint_url, headers=headers, timeout=15)
+            if server_response.status_code == 200:
+                payload_data = server_response.json().get("data", [])
+                if isinstance(payload_data, list) and payload_data:
+                    combined_records_list.extend(payload_data)
+        except Exception:
+            continue
+            
+    if not combined_records_list:
         return pd.DataFrame()
+        
+    raw_master_df = pd.DataFrame(combined_records_list)
+    
+    if "date" not in raw_master_df.columns:
+        return pd.DataFrame()
+        
+    raw_master_df["match_date_parsed"] = pd.to_datetime(raw_master_df["date"]).dt.date
+    
+    settled_results_mask = raw_master_df.get("status", "") == "FT"
+    historical_settled_df = raw_master_df[settled_results_mask]
+    
+    future_fixtures_mask = (
+        (raw_master_df.get("status", "") == "NS") & 
+        (raw_master_df["match_date_parsed"] >= current_date) & 
+        (raw_master_df["match_date_parsed"] <= ninety_days_future)
+    )
+    upcoming_three_month_df = raw_master_df[future_fixtures_mask]
+    
+    if historical_settled_df.empty and upcoming_three_month_df.empty:
+        return pd.DataFrame()
+        
+    final_sanitized_pipeline_df = pd.concat([historical_settled_df, upcoming_three_month_df], ignore_index=True)
+    final_sanitized_pipeline_df = final_sanitized_pipeline_df.sort_values(by="date", ascending=True)
+    
+    return final_sanitized_pipeline_df.drop(columns=["match_date_parsed"], errors="ignore")
+                
     
 # ==============================================================================
 # SEGMENT 2 OF 14: MATHEMATICAL COMPUTATION BACKBONE (POISSON CORE)
