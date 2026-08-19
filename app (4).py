@@ -341,11 +341,7 @@ st.sidebar.markdown("---")
 
 # Wrap your entire existing Segment 4 code layout tightly inside this conditional check!
 if active_app_tab == "📊 Predictive Analytics Hub":
-    # Ensure your league dropdown directory dictionary sits directly under here:
-    league_directory = {
-        "England Championship": 40, "Germany 2. Bundesliga": 79, "Dutch Eredivisie": 72,
-        "Belgium Pro League": 144, "France Ligue 2": 62, "Italy Serie B": 74,
-}
+    # Ensure your league dropdown directory dictionary sits directly under here
 
 st.sidebar.title("🧠 SISONKE CONTROL PANEL")
 
