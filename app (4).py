@@ -345,7 +345,7 @@ if active_app_tab == "📊 Predictive Analytics Hub":
     league_directory = {
         "England Championship": 40, "Germany 2. Bundesliga": 79, "Dutch Eredivisie": 72,
         "Belgium Pro League": 144, "France Ligue 2": 62, "Italy Serie B": 74,
-
+}
 
 st.sidebar.title("🧠 SISONKE CONTROL PANEL")
 
