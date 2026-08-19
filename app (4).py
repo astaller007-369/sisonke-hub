@@ -399,7 +399,7 @@ if st.sidebar.button("📅 Sync 3-Month Fixtures Only", key="sisonke_fixtures_ex
         # Pulls the newest year you typed into your sidebar text box automatically
         newest_active_year = max(active_seasons_list) if active_seasons_list else 2026
         
-        api_token = "YOUR_PRIVATE_THESTATSAPI_KEY_HERE"
+        api_token = "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu"
         url = f"https://thestatsapi.com{active_api_id}&season={newest_active_year}"
         headers = {"Authorization": f"Bearer {api_token}", "Accept": "application/json"}
         
