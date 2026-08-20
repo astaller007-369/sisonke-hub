@@ -123,11 +123,11 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
         }
         
         try:
-            # Type-hardened headers mapping with Accept validation and 30s timeout lock
+            # 🟢 FIXED: Hardcodes your token directly to bypass the missing variable fault
             server_response = requests.get(
                 endpoint_url, 
                 headers={
-                    "Authorization": f"fapi_MSr9G4BWrzxnDEoDGaUEHOoX82FsjIE3",
+                    "Authorization": "Bearer fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu",
                     "Accept": "application/json"
                 },
                 params=api_params,
@@ -139,6 +139,7 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
                     combined_records_list.extend(payload_data)
         except Exception:
             continue
+
             
             
         
