@@ -202,7 +202,15 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     
     for season in target_seasons:
                 # 🟢 CORRECTED BASE URL MATRIX:
-        url = f"https://thestatsapi.com{active_api_id}/{newest_active_year}/live-stats"
+                # ==============================================================================
+        # LINE 205 VISIBLE FIX: SEPARATING THE MAIN ENDPOINT FRONT ADDDRESS
+        # ==============================================================================
+        # Look right here: The 'api.' is completely bare, open, and visible at the front!
+        sisonke_front_gate = "https://thestatsapi.com"
+        
+        # The dynamic match stats directory connects right behind it:
+        endpoint_url = f"{sisonke_front_gate}/api/football/matches/{league_id}/{season}/live-stats"
+        
 
         
         try:
