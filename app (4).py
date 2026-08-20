@@ -105,15 +105,41 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     
     combined_records_list = []
     
-    for season in target_seasons:
+        for season in target_seasons:
         # ==============================================================================
-        # SEGMENT 2 FINALISED BASE URL PATHWAY
+        # SEGMENT 2 FINALISED IMMUNE BASE URL PATHWAY
         # ==============================================================================
-        # The 'api.' is bare, open, and visible at the front address!
         sisonke_front_gate = "https://api.thestatsapi.com"
         
-        # Connected to your verified team-id pathway directory path:
-        endpoint_url = f"{sisonke_front_gate}/api/football/teams/{league_id}/matches?season={season}"
+        # 🟢 THE REAL FIXED PATH: Appends the /api route and maps clean ID strings
+        # Enforces 'comp_' and 'sn_' string value prefixes exactly as required
+        endpoint_url = f"{sisonke_front_gate}/api/football/matches"
+        
+        # Type-hardened parameter mapping structure
+        api_params = {
+            "competition_id": f"comp_{league_id}" if "comp_" not in str(league_id) else league_id,
+            "season_id": f"sn_{season}" if "sn_" not in str(season) else season,
+            "per_page": 100
+        }
+        
+        try:
+            # Type-hardened headers mapping with Accept validation and 30s timeout lock
+            server_response = requests.get(
+                endpoint_url, 
+                headers={
+                    "Authorization": f"fapi_MSr9G4BWrzxnDEoDGaUEHOoX82FsjIE3",
+                    "Accept": "application/json"
+                },
+                params=api_params,
+                timeout=30
+            )
+            if server_response.status_code == 200:
+                payload_data = server_response.json().get("data", [])
+                if isinstance(payload_data, list) and payload_data:
+                    combined_records_list.extend(payload_data)
+        except Exception:
+            continue
+            
             
         
         try:
@@ -826,9 +852,30 @@ if st.sidebar.button("📅 Sync 3-Month Fixtures Only", key="sisonke_fixtures_ex
         # Pulls the newest year you typed into your sidebar text box automatically
         newest_active_year = max(active_seasons_list) if active_seasons_list else 2026
         
-        api_token = "fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu"
-        url = f"https://thestatsapi.com{active_api_id}&season={newest_active_year}"
-        headers = {"Authorization": f"Bearer {api_token}", "Accept": "application/json"}
+        api_token = "fapi_MSr9G4BWrzxnDEoDGaUEHOoX82FsjIE3"
+                # ==============================================================================
+        # SEGMENT 4 BUTTON B FINALISED IMMUNE BASE URL PATHWAY
+        # ==============================================================================
+        sisonke_front_gate = "https://api.thestatsapi.com"
+        url = f"{sisonke_front_gate}/api/football/matches"
+        
+        button_params = {
+            "competition_id": f"comp_{active_api_id}" if "comp_" not in str(active_api_id) else active_api_id,
+            "season_id": f"sn_{newest_active_year}" if "sn_" not in str(newest_active_year) else newest_active_year,
+            "per_page": 100
+        }
+        
+        # Executes response queries natively with identical headers protection blocks
+        response = requests.get(
+            url,
+            headers={
+                "Authorization": f"Bearer fapi_StHSSTzkl40Bc3EJ3znTqH8oEXjz3Szu",
+                "Accept": "application/json"
+            },
+            params=button_params,
+            timeout=30
+        )
+
         
         try:
             res = requests.get(url, headers=headers, timeout=10)
