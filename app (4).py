@@ -105,7 +105,7 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     
     combined_records_list = []
     
-     for season in target_seasons:
+    for season in target_seasons:
         # ==============================================================================
         # SEGMENT 2 FINALISED IMMUNE BASE URL PATHWAY
         # ==============================================================================
