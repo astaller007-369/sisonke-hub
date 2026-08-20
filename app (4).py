@@ -106,7 +106,15 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
     combined_records_list = []
     
     for season in target_seasons:
-        endpoint_url = f"https://thestatsapi.com{league_id}/{season}/live-stats"
+        # ==============================================================================
+        # SEGMENT 2 FINALISED BASE URL PATHWAY
+        # ==============================================================================
+        # The 'api.' is bare, open, and visible at the front address!
+        sisonke_front_gate = "https://api.thestatsapi.com"
+        
+        # Connected to your verified team-id pathway directory path:
+        endpoint_url = f"{sisonke_front_gate}/api/football/teams/{league_id}/matches?season={season}"
+            
         
         try:
             server_response = requests.get(endpoint_url, headers=headers, timeout=15)
@@ -206,10 +214,13 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
         # LINE 205 VISIBLE FIX: SEPARATING THE MAIN ENDPOINT FRONT ADDDRESS
         # ==============================================================================
         # Look right here: The 'api.' is completely bare, open, and visible at the front!
-        sisonke_front_gate = "https://thestatsapi.com"
+                # ==============================================================================
+        # SEGMENT 4 BUTTON B FINALISED BASE URL PATHWAY
+        # ==============================================================================
+        sisonke_front_gate = "https://api.thestatsapi.com"
         
-        # The dynamic match stats directory connects right behind it:
-        endpoint_url = f"{sisonke_front_gate}/api/football/matches/{league_id}/{season}/live-stats"
+        # Connected to your verified team-id pathway directory path:
+        url = f"{sisonke_front_gate}/api/football/teams/{active_api_id}/matches?season={newest_active_year}"
         
 
         
