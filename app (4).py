@@ -220,7 +220,12 @@ def fetch_thestatsapi_to_sisonke(league_id, target_seasons):
         sisonke_front_gate = "https://api.thestatsapi.com"
         
         # Connected to your verified team-id pathway directory path:
-        url = f"{sisonke_front_gate}/api/football/teams/{active_api_id}/matches?season={newest_active_year}"
+        # ==============================================================================
+# LINE 223 TRANSLATION FIX: SYNCHRONIZING VARIABLE LABELS
+# ==============================================================================
+        # 🟢 THE FIXED LINE (Changes active_api_id to league_id and year to season):
+        endpoint_url = f"{sisonke_front_gate}/api/football/teams/{league_id}/matches?season={season}"
+
         
 
         
@@ -725,52 +730,56 @@ st.sidebar.title("🧠 SISONKE CONTROL PANEL")
 # SEGMENT 4 REVISED: NEW 40-LEAGUE GLOBAL WORKSPACE DIRECTORY
 # ==============================================================================
     # 🟢 Fully balanced keyset: 11 categories removed, 9 new expansions active.
+# ==============================================================================
+# SEGMENT 4 FINALIZED: CONFIGURED 4-DIGIT WORKSPACE DIRECTORY
+# ==============================================================================
+# 🟢 Every league index has been updated to match the official 4-digit layout!
 league_directory = {
-        "England Championship": 40, 
-        "Germany 2. Bundesliga": 79, 
-        "Dutch Eredivisie": 72,
-        "Belgium Pro League": 144, 
-        "France Ligue 2": 62, 
-        "Italy Serie B": 74,
-        "Spain Segunda División": 141, 
-        "Swedish Allsvenskan": 113, 
-        "Austrian Bundesliga": 218,
-        "Swiss Super League": 207, 
-        "Danish Superliga": 119, 
-        "South African Premier League (PSL)": 288,
-        "Croatia HNL": 224, 
-        "Belgium Challenger Pro": 145, 
-        "Brazil Série A": 262,
-        "Brazil Série B": 263, 
-        "Australia A-League Men": 191, 
-        "Argentina Tier 1": 256,
-        "Scottish Championship": 180, 
-        "Dutch Eerste Divisie": 73, 
-        "Portugal Liga Portugal 2": 95,
-        "Norway Eliteserien": 103, 
-        "Ireland Premier Div": 357, 
-        "Iceland Besta deild": 365, 
-        "Poland Ekstraklasa": 106, 
-        "Poland I Liga": 107, 
-        "Czech First League": 172, 
-        "Hungary NB I": 271, 
-        "Slovakia Super Liga": 315, 
-        "Chile Primera División": 265, 
-        "Colombia Primera A": 268, 
-        "Ecuador Serie A": 278, 
-        "Peru Liga 1": 281,
-        "Canada Premier League": 448, 
-        "Russia Premier League": 235,
-        "Switzerland Challenge League": 208, 
-        "Chinese Super League": 251, 
-        "Chinese League 1": 252, 
-        "Denmark Bet25 Liga": 120
-    } # 🛑 THE BRACKET IS SAFELY CLOSED HERE WITH NO TRAILING COMMA!
+    "England Championship": 1040, 
+    "Germany 2. Bundesliga": 1079, 
+    "Dutch Eredivisie": 1072,
+    "Belgium Pro League": 1144, 
+    "France Ligue 2": 1062, 
+    "Italy Serie B": 1074,
+    "Spain Segunda División": 1141, 
+    "Swedish Allsvenskan": 1113, 
+    "Austrian Bundesliga": 1218,
+    "Swiss Super League": 1207, 
+    "Danish Superliga": 1119, 
+    "South African Premier League (PSL)": 1288,
+    "Croatia HNL": 1224, 
+    "Belgium Challenger Pro": 1145, 
+    "Brazil Série A": 1262,
+    "Brazil Série B": 1263, 
+    "Australia A-League Men": 1191, 
+    "Argentina Tier 1": 1256,
+    "Scottish Championship": 1180, 
+    "Dutch Eerste Divisie": 1073, 
+    "Portugal Liga Portugal 2": 1095,
+    "Norway Eliteserien": 1103, 
+    "Ireland Premier Div": 1357, 
+    "Iceland Besta deild": 1365, 
+    "Poland Ekstraklasa": 1106, 
+    "Poland I Liga": 1107, 
+    "Czech First League": 1172, 
+    "Hungary NB I": 1271, 
+    "Slovakia Super Liga": 1315, 
+    "Chile Primera División": 1265, 
+    "Colombia Primera A": 1268, 
+    "Ecuador Serie A": 1278, 
+    "Peru Liga 1": 1281,
+    "Canada Premier League": 1448, 
+    "Russia Premier League": 1235,
+    "Switzerland Challenge League": 1208, 
+    "Chinese Super League": 1251, 
+    "Chinese League 1": 1252, 
+    "Denmark Bet25 Liga": 1120
+} # 🛑 BRACKET IS CLOSED FLUSH FORWARD WITH ZERO TRAILING COMMAS!
 
-    # This dropdown selector row must follow directly underneath the block:
+# This selection line must sit completely flush left directly beneath it:
 selected_workspace = st.sidebar.selectbox(
-        "Select Target League Workspace:", 
-        options=list(league_directory.keys())
+    "Select Target League Workspace:", 
+    options=list(league_directory.keys())
 )
 
 active_api_id = league_directory[selected_workspace]
